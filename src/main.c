@@ -12,7 +12,7 @@
 static const char *TAG = "INTERRUPT_SCOPE";
 
 #define ADC_INPUT_CHANNEL   ADC_CHANNEL_6 // GPIO34
-#define ADC_SAMPLE_RATE     40000
+#define ADC_SAMPLE_RATE     200000
 #define SERIAL_BAUD_RATE    4000000
 #define ADC_READ_LEN        (256 * 8)
 
@@ -89,7 +89,7 @@ void app_main(void) {
     adc_calibrated = check_and_init_adc_calibration(ADC_UNIT_1, &adc_cali_handle);
 
     uart_config_t uart_config = {
-        .baud_rate = SERIAL_BAUD_RATE, .data_bits = UART_DATA_8_BITS, .parity = UART_PARITY_DISABLE,
+        .baud_rate = SERIAL_BAUD_RATE, .data_bits = UART_DATA_8_BITS, .parity = UART_PARITY_EVEN,
         .stop_bits = UART_STOP_BITS_1, .flow_ctrl = UART_HW_FLOWCTRL_DISABLE, .source_clk = UART_SCLK_DEFAULT,
     };
     ESP_ERROR_CHECK(uart_driver_install(UART_NUM_0, 4096, 0, 0, NULL, 0));
