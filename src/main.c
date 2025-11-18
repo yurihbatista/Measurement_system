@@ -11,8 +11,9 @@
 
 static const char *TAG = "INTERRUPT_SCOPE";
 
+#define DOWNSAMPLING_FACTOR 8
 #define ADC_INPUT_CHANNEL   ADC_CHANNEL_6 // GPIO34
-#define ADC_SAMPLE_RATE     200000
+#define ADC_SAMPLE_RATE     400000
 #define SERIAL_BAUD_RATE    4000000
 #define ADC_READ_LEN        (256 * 8)
 
@@ -66,18 +67,23 @@ static void oscilloscope_task(void *arg) {
             uint8_t *raw_adc_buffer = evt_data.conv_frame_buffer;
             uint32_t samples_read = evt_data.size / SOC_ADC_DIGI_RESULT_BYTES;
 
-            for (int i = 0; i < samples_read; i++) {
-                adc_digi_output_data_t *p = (adc_digi_output_data_t*)&raw_adc_buffer[i * SOC_ADC_DIGI_RESULT_BYTES];
-                int voltage_mv = 0;
-                if (adc_calibrated) {
-                    adc_cali_raw_to_voltage(adc_cali_handle, p->type1.data, &voltage_mv);
-                } else {
-                    voltage_mv = p->type1.data; 
+            uint32_t downsampled_samples_count = 0;
+            for (int i = 0; i < samples_read; i += DOWNSAMPLING_FACTOR) {
+                uint32_t sum = 0;
+                for (int j = 0; j < DOWNSAMPLING_FACTOR && (i + j) < samples_read; j++) {
+                    adc_digi_output_data_t *p = (adc_digi_output_data_t*)&raw_adc_buffer[(i + j) * SOC_ADC_DIGI_RESULT_BYTES];
+                    int voltage_mv = 0;
+                    if (adc_calibrated) {
+                        adc_cali_raw_to_voltage(adc_cali_handle, p->type1.data, &voltage_mv);
+                    } else {
+                        voltage_mv = p->type1.data; 
+                    }
+                    sum += voltage_mv;
                 }
-                tx_buffer[i] = (uint16_t)voltage_mv;
+                tx_buffer[downsampled_samples_count++] = (uint16_t)(sum / DOWNSAMPLING_FACTOR);
             }
 
-            uart_write_bytes(UART_NUM_0, (const char*)tx_buffer, samples_read * sizeof(uint16_t));
+            uart_write_bytes(UART_NUM_0, (const char*)tx_buffer, downsampled_samples_count * sizeof(uint16_t));
         }
     }
     free(tx_buffer);
