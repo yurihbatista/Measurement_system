@@ -77,7 +77,6 @@ static void oscilloscope_task(void *arg) {
                 tx_buffer[i] = (uint16_t)voltage_mv;
             }
 
-            uart_write_bytes(UART_NUM_0, &SYNC_WORD, sizeof(SYNC_WORD));
             uart_write_bytes(UART_NUM_0, (const char*)tx_buffer, samples_read * sizeof(uint16_t));
         }
     }
