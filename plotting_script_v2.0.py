@@ -312,12 +312,12 @@ class PowerAnalyzer(QtWidgets.QWidget):
 
     def update_header(self, max_v, rms_v, freq_v, max_i, rms_i, active_p, avg_t, avg_l, queue_size):
         text = (
-            f"<span style='color: yellow;'>V: {max_v:.0f}pk / {rms_v:.1f}rms </span> | "
-            f"<span style='color: #00FF00; font-weight:bold;'>{freq_v:.1f}Hz</span> | "
-            f"<span style='color: cyan;'>I: {max_i:.0f}pk / {rms_i:.0f}rms</span> | "
-            f"<span style='color: #FF5555;'>PWR: {active_p:.1f}W</span> | "
-            f"<span style='color: magenta;'>{avg_t:.1f}C</span> | "
-            f"<span style='color: white;'>{avg_l:.0f}lx</span> | "
+                f"<span style='color: yellow;'>V (max): {max_v:.0f} V | V (rms): {rms_v:.1f} V </span> | "
+                f"<span style='color: #00FF00; font-weight:bold;'>CH0: {freq_v:.1f}Hz</span> | "
+                f"<span style='color: cyan;'>I (max): {max_i:.0f} mA | I (RMS): {rms_i:.0f} mA</span> | "
+            f"<span style='color: #FF5555;'>Potência ativa: {active_p:.1f} W</span> | "
+            f"<span style='color: magenta;'>{avg_t:.1f} °C </span> | "
+            f"<span style='color: white;'>{avg_l:.0f} lx</span> | "
             f"<span style='color: gray; font-size:10px;'>Buf: {queue_size}</span>"
         )
         self.header_label.setText(text)
